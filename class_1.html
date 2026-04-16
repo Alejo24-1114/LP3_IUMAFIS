@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía de Clase — Java LP-III · Semana 2</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap');
+  :root {
+    --bg:#0f1117; --bg2:#161922; --bg3:#1d2130; --border:#2a2f42;
+    --accent:#f0883e; --accent2:#58a6ff; --accent3:#3fb950; --accent4:#d2a8ff;
+    --danger:#ff7b72; --warn:#f0883e;
+    --text:#e6edf3; --text2:#8b949e; --text3:#6e7681;
+    --mono:'JetBrains Mono',monospace; --sans:'Inter',sans-serif; --display:'Syne',sans-serif;
+    --r:10px; --rl:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.7;}
+  #progress-bar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--accent2),var(--accent4));width:0%;transition:width .2s;z-index:1000;}
+
+  /* SIDEBAR */
+  #sidebar{position:fixed;left:0;top:0;height:100vh;width:250px;background:var(--bg2);border-right:1px solid var(--border);padding:1.5rem 1rem;display:flex;flex-direction:column;gap:2px;z-index:100;overflow-y:auto;}
+  .logo{font-family:var(--display);font-size:12px;font-weight:800;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1.25rem;display:flex;align-items:center;gap:8px;}
+  .logo::before{content:'';width:8px;height:8px;background:var(--accent);border-radius:50%;animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  .nav-section{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;padding:10px 8px 4px;}
+  .nav-item{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;cursor:pointer;font-size:12.5px;color:var(--text2);text-decoration:none;transition:all .15s;border:1px solid transparent;}
+  .nav-item:hover{background:var(--bg3);color:var(--text);}
+  .nav-item.active{background:rgba(88,166,255,.1);color:var(--accent2);border-color:rgba(88,166,255,.2);}
+  .nav-num{width:18px;height:18px;background:var(--bg3);border-radius:4px;font-size:9px;display:flex;align-items:center;justify-content:center;color:var(--text3);font-family:var(--mono);flex-shrink:0;}
+  .nav-item.active .nav-num{background:var(--accent2);color:var(--bg);}
+  .nav-time{margin-left:auto;font-size:10px;color:var(--text3);font-family:var(--mono);}
+
+  /* MAIN */
+  #main{margin-left:250px;padding:2.5rem 2.5rem 4rem;max-width:920px;}
+
+  /* HEADER */
+  .page-header{border:1px solid var(--border);border-radius:var(--rl);background:var(--bg2);padding:2.5rem;margin-bottom:3rem;position:relative;overflow:hidden;}
+  .page-header::before{content:'JAVA';position:absolute;right:-10px;top:-20px;font-family:var(--display);font-size:110px;font-weight:800;color:rgba(88,166,255,.04);pointer-events:none;user-select:none;line-height:1;}
+  .header-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(88,166,255,.1);border:1px solid rgba(88,166,255,.25);color:var(--accent2);font-size:11px;font-weight:600;padding:3px 12px;border-radius:99px;margin-bottom:.875rem;font-family:var(--mono);letter-spacing:.05em;}
+  .page-header h1{font-family:var(--display);font-size:1.9rem;font-weight:800;color:var(--text);line-height:1.2;margin-bottom:.6rem;}
+  .page-header .subtitle{color:var(--text2);font-size:14px;}
+  .header-meta{display:flex;gap:1.75rem;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border);flex-wrap:wrap;}
+  .meta-item{display:flex;flex-direction:column;gap:2px;}
+  .meta-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;font-weight:600;}
+  .meta-value{font-size:13px;color:var(--text);font-weight:500;}
+
+  /* TIMELINE INDICATOR */
+  .timeline-bar{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:1.25rem 1.5rem;margin-bottom:2.5rem;}
+  .timeline-bar h3{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.875rem;}
+  .tl-track{display:flex;gap:4px;}
+  .tl-block{flex:1;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-family:var(--mono);font-weight:700;letter-spacing:.03em;position:relative;cursor:default;}
+  .tl-block span{font-size:9px;position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);color:var(--text3);white-space:nowrap;}
+  .tl-1{background:rgba(63,185,80,.15);color:var(--accent3);border:1px solid rgba(63,185,80,.25);}
+  .tl-2{background:rgba(88,166,255,.15);color:var(--accent2);border:1px solid rgba(88,166,255,.25);}
+  .tl-3{background:rgba(240,136,62,.15);color:var(--warn);border:1px solid rgba(240,136,62,.25);}
+  .tl-4{background:rgba(210,168,255,.15);color:var(--accent4);border:1px solid rgba(210,168,255,.25);}
+  .tl-5{background:rgba(255,123,114,.15);color:var(--danger);border:1px solid rgba(255,123,114,.25);}
+
+  /* SECTIONS */
+  section{margin-bottom:3rem;scroll-margin-top:1.5rem;}
+  .section-title{display:flex;align-items:center;gap:10px;font-family:var(--display);font-size:1.2rem;font-weight:700;color:var(--text);margin-bottom:1.25rem;padding-bottom:.75rem;border-bottom:1px solid var(--border);}
+  .sec-icon{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+  .i-blue{background:rgba(88,166,255,.15);} .i-green{background:rgba(63,185,80,.15);} .i-orange{background:rgba(240,136,62,.15);} .i-purple{background:rgba(210,168,255,.15);} .i-red{background:rgba(255,123,114,.15);} .i-teal{background:rgba(63,210,185,.15);}
+  .time-badge{margin-left:auto;font-size:11px;font-family:var(--mono);color:var(--text3);background:var(--bg3);border:1px solid var(--border);padding:2px 10px;border-radius:99px;}
+
+  /* CALLOUTS */
+  .callout{border-radius:0 var(--r) var(--r) 0;padding:.75rem 1rem;margin-bottom:1.25rem;font-size:14px;}
+  .callout-blue{background:rgba(88,166,255,.07);border-left:3px solid var(--accent2);}
+  .callout-green{background:rgba(63,185,80,.07);border-left:3px solid var(--accent3);}
+  .callout-orange{background:rgba(240,136,62,.07);border-left:3px solid var(--warn);}
+  .callout-purple{background:rgba(210,168,255,.07);border-left:3px solid var(--accent4);}
+  .callout strong{color:var(--accent2);}
+  .callout-green strong{color:var(--accent3);}
+  .callout-orange strong{color:var(--warn);}
+  .callout-purple strong{color:var(--accent4);}
+
+  /* CODE */
+  .code-wrap{margin:.875rem 0;border-radius:var(--r);overflow:hidden;border:1px solid var(--border);}
+  .code-top{background:var(--bg3);padding:.4rem 1rem;display:flex;align-items:center;justify-content:space-between;}
+  .code-lang{font-size:11px;color:var(--text3);font-family:var(--mono);}
+  .copy-btn{font-size:10px;padding:2px 10px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;font-family:var(--mono);transition:all .15s;}
+  .copy-btn:hover{border-color:var(--accent2);color:var(--accent2);}
+  .copy-btn.copied{border-color:var(--accent3);color:var(--accent3);}
+  pre{background:#0d1117;padding:1.25rem;overflow-x:auto;margin:0;}
+  pre code{font-family:var(--mono);font-size:13px;line-height:1.8;display:block;}
+  .kw{color:#ff7b72;} .kw2{color:#f0883e;} .str{color:#a5d6ff;} .num{color:#79c0ff;}
+  .cmt{color:#8b949e;font-style:italic;} .fn{color:#d2a8ff;} .cls{color:#ffa657;}
+  .pkg{color:#3fb950;} .ann{color:#e3b341;}
+
+  /* STEP CARDS */
+  .step-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);margin-bottom:1.25rem;overflow:hidden;transition:border-color .2s;}
+  .step-card:hover{border-color:rgba(88,166,255,.3);}
+  .step-header{padding:1rem 1.25rem;display:flex;align-items:center;gap:.875rem;cursor:pointer;user-select:none;}
+  .step-num{width:34px;height:34px;background:rgba(88,166,255,.12);border:1px solid rgba(88,166,255,.25);border-radius:8px;font-family:var(--mono);font-size:13px;font-weight:700;color:var(--accent2);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .step-title-block{flex:1;}
+  .step-title{font-weight:600;font-size:14.5px;color:var(--text);}
+  .step-sub{font-size:11.5px;color:var(--text3);margin-top:2px;}
+  .step-toggle{color:var(--text3);transition:transform .2s;font-size:11px;}
+  .step-toggle.open{transform:rotate(90deg);}
+  .step-body{padding:0 1.25rem 1.25rem;display:none;}
+  .step-body.open{display:block;}
+
+  /* ACTION BOX */
+  .action-box{background:rgba(63,185,80,.06);border-left:3px solid var(--accent3);border-radius:0 var(--r) var(--r) 0;padding:.75rem 1rem;margin-bottom:1rem;}
+  .label-tag{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;}
+  .lt-green{color:var(--accent3);} .lt-blue{color:var(--accent2);} .lt-orange{color:var(--warn);} .lt-purple{color:var(--accent4);}
+  .action-steps{padding-left:1.2rem;}
+  .action-steps li{margin-bottom:4px;font-size:14px;color:var(--text2);}
+  .action-steps li strong{color:var(--text);}
+  .menu-path{font-family:var(--mono);font-size:11px;background:var(--bg3);border:1px solid var(--border);padding:1px 6px;border-radius:4px;color:var(--accent4);}
+  .result-box{background:rgba(63,185,80,.06);border:1px solid rgba(63,185,80,.2);border-radius:var(--r);padding:.75rem 1rem;margin-top:1rem;font-size:13px;}
+
+  /* CONCEPT CARDS */
+  .concept-grid{display:grid;grid-template-columns:1fr 1fr;gap:.875rem;margin-bottom:1.25rem;}
+  .concept-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1rem;font-size:13.5px;transition:border-color .2s;}
+  .concept-card:hover{border-color:var(--accent2);}
+  .concept-card h4{font-size:13px;font-weight:600;margin-bottom:.4rem;display:flex;align-items:center;gap:6px;}
+
+  /* ERRORS TABLE */
+  .error-table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  .error-table th{background:var(--bg3);padding:9px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;border-bottom:2px solid var(--border);}
+  .error-table td{padding:11px 12px;border-bottom:1px solid var(--border);vertical-align:top;}
+  .error-table tr:last-child td{border-bottom:none;}
+  .error-table tr:hover td{background:rgba(255,255,255,.02);}
+  .error-code{font-family:var(--mono);font-size:11.5px;color:var(--danger);background:rgba(255,123,114,.1);padding:2px 7px;border-radius:4px;display:inline-block;}
+
+  /* RETOS */
+  .reto-card{border-radius:var(--rl);overflow:hidden;margin-bottom:1.5rem;border:1px solid var(--border);}
+  .reto-header{padding:1.1rem 1.5rem;display:flex;align-items:center;gap:.875rem;}
+  .reto-1 .reto-header{background:rgba(63,185,80,.08);border-bottom:1px solid rgba(63,185,80,.2);}
+  .reto-2 .reto-header{background:rgba(88,166,255,.08);border-bottom:1px solid rgba(88,166,255,.2);}
+  .reto-3 .reto-header{background:rgba(210,168,255,.08);border-bottom:1px solid rgba(210,168,255,.2);}
+  .reto-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:99px;letter-spacing:.06em;text-transform:uppercase;font-family:var(--mono);}
+  .reto-1 .reto-badge{background:rgba(63,185,80,.2);color:var(--accent3);}
+  .reto-2 .reto-badge{background:rgba(88,166,255,.2);color:var(--accent2);}
+  .reto-3 .reto-badge{background:rgba(210,168,255,.2);color:var(--accent4);}
+  .reto-title{font-weight:600;font-size:14.5px;}
+  .reto-body{background:var(--bg2);padding:1.25rem;}
+  .reto-enunciado{color:var(--text2);margin-bottom:1.1rem;font-size:14px;line-height:1.75;}
+  .criterio{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--text2);margin-bottom:4px;}
+  .criterio::before{content:'□';font-size:13px;color:var(--text3);flex-shrink:0;margin-top:1px;}
+
+  details.hint{margin-top:1rem;}
+  details.hint summary{cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);display:flex;align-items:center;gap:6px;list-style:none;padding:7px 12px;background:var(--bg3);border-radius:var(--r);border:1px solid var(--border);transition:all .15s;}
+  details.hint summary:hover{border-color:var(--warn);color:var(--warn);}
+  details.hint[open] summary{border-color:var(--warn);color:var(--warn);border-radius:var(--r) var(--r) 0 0;}
+  details.hint summary::before{content:'💡';font-size:13px;}
+  details.hint .hint-body{background:rgba(240,136,62,.06);border:1px solid rgba(240,136,62,.2);border-top:none;border-radius:0 0 var(--r) var(--r);padding:.875rem 1.1rem;font-size:13.5px;color:var(--text2);line-height:1.75;}
+
+  /* ENTREGABLE BOX */
+  .entregable-box{background:rgba(210,168,255,.06);border:1px solid rgba(210,168,255,.25);border-radius:var(--rl);padding:1.5rem;margin-top:1.5rem;}
+  .entregable-box h3{font-family:var(--display);font-size:1rem;font-weight:700;color:var(--accent4);margin-bottom:.875rem;display:flex;align-items:center;gap:8px;}
+  .entregable-item{display:flex;align-items:flex-start;gap:10px;padding:.6rem 0;border-bottom:1px solid var(--border);font-size:14px;}
+  .entregable-item:last-child{border-bottom:none;}
+  .e-num{width:22px;height:22px;background:rgba(210,168,255,.2);border-radius:4px;font-size:11px;font-weight:700;color:var(--accent4);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--mono);}
+  .e-content{flex:1;color:var(--text2);}
+  .e-content strong{color:var(--text);}
+
+  /* FOOTER */
+  .footer-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;}
+  .footer-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:1.25rem;}
+  .footer-card h3{font-family:var(--display);font-size:12px;font-weight:700;margin-bottom:.875rem;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;}
+  .tag-list{display:flex;flex-wrap:wrap;gap:5px;}
+  .tag{font-size:11.5px;font-family:var(--mono);padding:3px 9px;border-radius:99px;border:1px solid var(--border);color:var(--text2);background:var(--bg3);}
+  .tag.done{border-color:rgba(63,185,80,.3);color:var(--accent3);background:rgba(63,185,80,.08);}
+  .tag.upcoming{border-color:rgba(88,166,255,.3);color:var(--accent2);background:rgba(88,166,255,.08);}
+
+  /* MOBILE */
+  #menu-toggle{display:none;position:fixed;top:1rem;left:1rem;z-index:200;width:36px;height:36px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;cursor:pointer;align-items:center;justify-content:center;font-size:18px;color:var(--text);}
+  @media(max-width:780px){
+    #sidebar{transform:translateX(-100%);transition:transform .3s;}
+    #sidebar.open{transform:translateX(0);}
+    #main{margin-left:0;padding:1.25rem;padding-top:4rem;}
+    #menu-toggle{display:flex;}
+    .concept-grid{grid-template-columns:1fr;}
+    .footer-grid{grid-template-columns:1fr;}
+    .header-meta{gap:1rem;}
+    .tl-track{flex-wrap:wrap;}
+    .tl-block span{display:none;}
+  }
+
+  /* inline code */
+  p code, li code, td code{font-family:var(--mono);font-size:12px;background:var(--bg3);border:1px solid var(--border);padding:1px 6px;border-radius:4px;color:var(--accent4);}
+  p{color:var(--text2);font-size:14px;line-height:1.75;margin-bottom:.75rem;}
+  ul,ol{color:var(--text2);font-size:14px;padding-left:1.3rem;margin-bottom:.75rem;}
+  li{margin-bottom:4px;}
+  strong{color:var(--text);}
+</style>
+</head>
+<body>
+<div id="progress-bar"></div>
+<button id="menu-toggle" onclick="toggleMenu()">☰</button>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="logo">LP-III · Semana 2</div>
+  <div class="nav-section">Inicio</div>
+  <a class="nav-item active" href="#inicio" onclick="navClick(this)"><span class="nav-num">00</span>Presentación<span class="nav-time">5min</span></a>
+  <a class="nav-item" href="#aprendizaje" onclick="navClick(this)"><span class="nav-num">01</span>Competencias</a>
+
+  <div class="nav-section">Bloque 1 · Proyecto</div>
+  <a class="nav-item" href="#config" onclick="navClick(this)"><span class="nav-num">02</span>Configuración<span class="nav-time">20min</span></a>
+  <a class="nav-item" href="#estructura" onclick="navClick(this)"><span class="nav-num">03</span>Estructura Maven<span class="nav-time">15min</span></a>
+
+  <div class="nav-section">Bloque 2 · Lenguaje</div>
+  <a class="nav-item" href="#variables" onclick="navClick(this)"><span class="nav-num">04</span>Variables y tipos<span class="nav-time">20min</span></a>
+  <a class="nav-item" href="#condicionales" onclick="navClick(this)"><span class="nav-num">05</span>Condicionales<span class="nav-time">25min</span></a>
+  <a class="nav-item" href="#listas" onclick="navClick(this)"><span class="nav-num">06</span>Listas (ArrayList)<span class="nav-time">25min</span></a>
+
+  <div class="nav-section">Bloque 3 · Funciones</div>
+  <a class="nav-item" href="#metodos" onclick="navClick(this)"><span class="nav-num">07</span>Métodos<span class="nav-time">25min</span></a>
+  <a class="nav-item" href="#multiclase" onclick="navClick(this)"><span class="nav-num">08</span>Múltiples clases<span class="nav-time">25min</span></a>
+
+  <div class="nav-section">Cierre</div>
+  <a class="nav-item" href="#retos" onclick="navClick(this)"><span class="nav-num">09</span>Retos<span class="nav-time">20min</span></a>
+  <a class="nav-item" href="#entregable" onclick="navClick(this)"><span class="nav-num">10</span>Entregable</a>
+  <a class="nav-item" href="#cierre" onclick="navClick(this)"><span class="nav-num">11</span>Cierre S2</a>
+</nav>
+
+<!-- MAIN -->
+<main id="main">
+
+<!-- ══════════════════════════════════════════
+     HEADER
+══════════════════════════════════════════ -->
+<section id="inicio">
+  <div class="page-header">
+    <div class="header-badge">📅 Semana 2 · Clase 3h30min · Maven / Gradle</div>
+    <h1>Sistema de Gestión de Estudiantes</h1>
+    <p class="subtitle">Construirás desde cero un proyecto <strong>Maven</strong> en NetBeans, aplicando variables, condicionales, listas, métodos y múltiples clases bajo el paquete <code style="font-family:var(--mono);font-size:13px;color:#3fb950">co.edu.iumafis.lang3</code>.</p>
+    <div class="header-meta">
+      <div class="meta-item"><span class="meta-label">Asignatura</span><span class="meta-value">Lenguaje de Programación III</span></div>
+      <div class="meta-item"><span class="meta-label">Paquete base</span><span class="meta-value">co.edu.iumafis.lang3</span></div>
+      <div class="meta-item"><span class="meta-label">Build tool</span><span class="meta-value">Maven (o Gradle)</span></div>
+      <div class="meta-item"><span class="meta-label">Duración</span><span class="meta-value">3 horas 30 minutos</span></div>
+    </div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="timeline-bar">
+    <h3>Distribución de la clase</h3>
+    <div class="tl-track">
+      <div class="tl-block tl-1" style="flex:1.5">Proyecto<span>0–35min</span></div>
+      <div class="tl-block tl-2" style="flex:2">Lenguaje<span>35–105min</span></div>
+      <div class="tl-block tl-3" style="flex:1.5">Funciones<span>105–155min</span></div>
+      <div class="tl-block tl-4" style="flex:1">Retos<span>155–195min</span></div>
+      <div class="tl-block tl-5" style="flex:.8">Cierre<span>195–210min</span></div>
+    </div>
+    <div style="height:26px;"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     COMPETENCIAS
+══════════════════════════════════════════ -->
+<section id="aprendizaje">
+  <h2 class="section-title"><span class="sec-icon i-blue">🎯</span>¿Qué aprenderás hoy?</h2>
+  <div class="concept-grid">
+    <div class="concept-card"><h4 style="color:var(--accent3)">✓ Proyecto Maven</h4>Crear y entender la estructura de un proyecto Maven con paquete institucional correcto.</div>
+    <div class="concept-card"><h4 style="color:var(--accent3)">✓ Variables y tipos</h4>Declarar y usar <code>int</code>, <code>double</code>, <code>String</code>, <code>boolean</code> con buenas convenciones.</div>
+    <div class="concept-card"><h4 style="color:var(--accent3)">✓ Condicionales</h4>Aplicar <code>if/else if/else</code> y <code>switch</code> para tomar decisiones en el programa.</div>
+    <div class="concept-card"><h4 style="color:var(--accent3)">✓ ArrayList</h4>Crear y manipular listas dinámicas: agregar, recorrer, buscar y eliminar elementos.</div>
+    <div class="concept-card"><h4 style="color:var(--accent3)">✓ Métodos propios</h4>Definir funciones con parámetros y retorno para evitar código repetido.</div>
+    <div class="concept-card"><h4 style="color:var(--accent3)">✓ Múltiples clases</h4>Separar responsabilidades en clases distintas: modelo, lógica y ejecución.</div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SECCIÓN 2 — CONFIGURACIÓN
+══════════════════════════════════════════ -->
+<section id="config">
+  <h2 class="section-title"><span class="sec-icon i-green">⚙️</span>Configuración del entorno<span class="time-badge">~20 min</span></h2>
+  <p>Antes de crear el proyecto, verifica que el entorno esté listo. Abre la <strong>Terminal</strong> (Windows: PowerShell o CMD; Mac/Linux: Terminal).</p>
+
+  <div class="code-wrap">
+    <div class="code-top"><span class="code-lang">Terminal — verificar Java y Maven</span><button class="copy-btn" onclick="copyText(this,'java -version\njavac -version\nmvn -version')">copiar</button></div>
+    <div class="cmd-body" style="background:#0d1117;padding:1rem 1.25rem;">
+      <code style="font-family:var(--mono);font-size:13px;line-height:1.9;display:block;">
+        <span style="color:#3fb950">$</span> <span style="color:#58a6ff">java -version</span><br>
+        <span style="color:#8b949e">java version "21.0.x" ... (versión ≥ 11 ✅)</span><br><br>
+        <span style="color:#3fb950">$</span> <span style="color:#58a6ff">javac -version</span><br>
+        <span style="color:#8b949e">javac 21.0.x ✅</span><br><br>
+        <span style="color:#3fb950">$</span> <span style="color:#58a6ff">mvn -version</span><br>
+        <span style="color:#8b949e">Apache Maven 3.x.x ... (si aparece, Maven está disponible ✅)</span>
+      </code>
+    </div>
+  </div>
+  <div style="background:rgba(255,123,114,.08);border:1px solid rgba(255,123,114,.25);border-radius:var(--r);padding:.875rem 1rem;font-size:14px;margin-top:.5rem;">
+    <strong style="color:var(--danger)">⚠️ Si mvn no se reconoce:</strong> NetBeans incluye Maven internamente — no necesitas instalarlo por separado. El IDE lo gestiona automáticamente al crear el proyecto.
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SECCIÓN 3 — ESTRUCTURA MAVEN
+══════════════════════════════════════════ -->
+<section id="estructura">
+  <h2 class="section-title"><span class="sec-icon i-orange">📦</span>Crear proyecto Maven en NetBeans<span class="time-badge">~15 min</span></h2>
+
+  <div class="callout callout-orange">
+    <strong>¿Por qué Maven?</strong> Maven es el estándar de la industria para gestionar proyectos Java. Define estructura de carpetas, dependencias y ciclo de vida de compilación de forma estandarizada. Gradle es una alternativa más moderna con sintaxis más compacta — ambos resuelven el mismo problema.
+  </div>
+
+  <div class="step-card">
+    <div class="step-header" onclick="toggleStep(this)">
+      <span class="step-num">1</span>
+      <div class="step-title-block"><div class="step-title">Crear el proyecto Maven</div><div class="step-sub">File → New Project → Maven Java Application</div></div>
+      <span class="step-toggle">▶</span>
+    </div>
+    <div class="step-body">
+      <div class="action-box">
+        <div class="label-tag lt-green">📋 Pasos en NetBeans</div>
+        <ol class="action-steps">
+          <li><span class="menu-path">File → New Project</span></li>
+          <li>Categoría: <strong>Java with Maven</strong> → tipo: <strong>Java Application</strong> → <strong>Next</strong></li>
+          <li><strong>Project Name:</strong> <code>SistemaEstudiantes</code></li>
+          <li><strong>Group Id:</strong> <code>co.edu.iumafis</code> <em style="color:var(--text3)">(identifica tu organización)</em></li>
+          <li><strong>Artifact Id:</strong> <code>lang3</code> <em style="color:var(--text3)">(identifica el módulo)</em></li>
+          <li><strong>Package:</strong> <code>co.edu.iumafis.lang3</code> se generará automáticamente</li>
+          <li>Clic en <strong>Finish</strong></li>
+        </ol>
+      </div>
+      <p style="font-size:14px;"><strong>Estructura de carpetas que crea Maven automáticamente:</strong></p>
+      <div class="code-wrap">
+        <div class="code-top"><span class="code-lang">Árbol de directorios Maven</span></div>
+        <pre><code>SistemaEstudiantes/
+├── pom.xml                         <span class="cmt">← descriptor del proyecto (dependencias, versiones)</span>
+├── src/
+│   ├── main/
+│   │   └── java/
+│   │       └── co/edu/iumafis/lang3/
+│   │           └── App.java        <span class="cmt">← clase principal generada automáticamente</span>
+│   └── test/
+│       └── java/
+│           └── co/edu/iumafis/lang3/
+│               └── AppTest.java    <span class="cmt">← pruebas unitarias (semestres futuros)</span>
+└── target/                         <span class="cmt">← carpeta de compilados (no tocar manualmente)</span></code></pre>
+      </div>
+      <div class="result-box">
+        <div class="label-tag lt-green">✅ Resultado esperado</div>
+        NetBeans muestra el proyecto en el panel izquierdo con la estructura descrita. Puedes ver <code>pom.xml</code> en la raíz.
+      </div>
+    </div>
+  </div>
+
+  <div class="step-card">
+    <div class="step-header" onclick="toggleStep(this)">
+      <span class="step-num">2</span>
+      <div class="step-title-block"><div class="step-title">Entender el pom.xml</div><div class="step-sub">El corazón de un proyecto Maven</div></div>
+      <span class="step-toggle">▶</span>
+    </div>
+    <div class="step-body">
+      <div class="callout callout-blue"><strong>¿Qué es el pom.xml?</strong> Project Object Model — define quién eres (groupId/artifactId), qué versión de Java usas y qué librerías externas necesitas. Equivalente al <code>package.json</code> de Node o al <code>requirements.txt</code> de Python.</div>
+      <div class="code-wrap">
+        <div class="code-top"><span class="code-lang">XML · pom.xml mínimo para Java 17+</span><button class="copy-btn" onclick="copyCode(this,'pom1')">copiar</button></div>
+        <pre><code id="pom1"><span style="color:#79c0ff">&lt;project&gt;</span>
+  <span style="color:#79c0ff">&lt;modelVersion&gt;</span>4.0.0<span style="color:#79c0ff">&lt;/modelVersion&gt;</span>
+
+  <span style="color:#a5d6ff">&lt;groupId&gt;</span>co.edu.iumafis<span style="color:#a5d6ff">&lt;/groupId&gt;</span>      <span class="cmt">&lt;!-- organización/institución --&gt;</span>
+  <span style="color:#a5d6ff">&lt;artifactId&gt;</span>lang3<span style="color:#a5d6ff">&lt;/artifactId&gt;</span>          <span class="cmt">&lt;!-- nombre del módulo          --&gt;</span>
+  <span style="color:#a5d6ff">&lt;version&gt;</span>1.0-SNAPSHOT<span style="color:#a5d6ff">&lt;/version&gt;</span>     <span class="cmt">&lt;!-- versión en desarrollo       --&gt;</span>
+  <span style="color:#a5d6ff">&lt;packaging&gt;</span>jar<span style="color:#a5d6ff">&lt;/packaging&gt;</span>
+
+  <span style="color:#79c0ff">&lt;properties&gt;</span>
+    <span style="color:#a5d6ff">&lt;maven.compiler.source&gt;</span>17<span style="color:#a5d6ff">&lt;/maven.compiler.source&gt;</span>  <span class="cmt">&lt;!-- versión Java fuente --&gt;</span>
+    <span style="color:#a5d6ff">&lt;maven.compiler.target&gt;</span>17<span style="color:#a5d6ff">&lt;/maven.compiler.target&gt;</span>  <span class="cmt">&lt;!-- versión Java destino --&gt;</span>
+    <span style="color:#a5d6ff">&lt;project.build.sourceEncoding&gt;</span>UTF-8<span style="color:#a5d6ff">&lt;/project.build.sourceEncoding&gt;</span>
+  <span style="color:#79c0ff">&lt;/properties&gt;</span>
+<span style="color:#79c0ff">&lt;/project&gt;</span></code></pre>
+      </div>
+      <p>Verifica que tu <code>pom.xml</code> tenga la sección <code>&lt;properties&gt;</code> con la versión de Java. Si no aparece, agrégala.</p>
+    </div>
+  </div>
+
+  <div class="step-card">
+    <div class="step-header" onclick="toggleStep(this)">
+      <span class="step-num">3</span>
+      <div class="step-title-block"><div class="step-title">Renombrar la clase principal</div><div class="step-sub">Adaptar App.java a nuestro sistema</div></div>
+      <span class="step-toggle">▶</span>
+    </div>
+    <div class="step-body">
+      <p>Maven genera una clase llamada <code>App.java</code>. La renombramos a <code>Main.java</code> para mayor claridad:</p>
+      <div class="action-box">
+        <div class="label-tag lt-green">📋 Renombrar en NetBeans</div>
+        <ol class="action-steps">
+          <li>Clic derecho sobre <code>App.java</code> en el panel de proyectos</li>
+          <li>Selecciona <strong>Refactor → Rename</strong></li>
+          <li>Escribe <strong>Main</strong> y confirma — NetBeans actualiza todas las referencias automáticamente</li>
+        </ol>
+      </div>
+      <div class="code-wrap">
+        <div class="code-top"><span class="code-lang">Java · Main.java — punto de entrada inicial</span><button class="copy-btn" onclick="copyCode(this,'c_main0')">copiar</button></div>
+        <pre><code id="c_main0"><span class="pkg">package</span> co.edu.iumafis.lang3;
+
+<span class="kw">public</span> <span class="kw">class</span> <span class="cls">Main</span> {
+
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw2">void</span> <span class="fn">main</span>(String[] args) {
+        System.out.<span class="fn">println</span>(<span class="str">"=== Sistema de Gestión de Estudiantes ==="</span>);
+        System.out.<span class="fn">println</span>(<span class="str">"Paquete: co.edu.iumafis.lang3"</span>);
+    }
+}</code></pre>
+      </div>
+      <div class="result-box">
+        <div class="label-tag lt-green">✅ Ejecuta con F6</div>
+        La consola debe mostrar las dos líneas de texto. Si ves <code>BUILD SUCCESS</code>, el proyecto Maven está funcionando.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SECCIÓN 4 — VARIABLES
+══════════════════════════════════════════ -->
+<section id="variables">
+  <h2 class="section-title"><span class="sec-icon i-blue">🔢</span>Variables y tipos de datos<span class="time-badge">~20 min</span></h2>
+
+  <div class="callout callout-blue">
+    <strong>Recordatorio semana 1:</strong> Una variable es un espacio en memoria con nombre y tipo. El tipo determina qué clase de dato puede almacenar y cuánta memoria ocupa.
+  </div>
+
+  <div class="concept-grid">
+    <div class="concept-card">
+      <h4 style="color:var(--accent2)">Tipos primitivos</h4>
+      <code>int</code> — enteros (edad, cantidad)<br>
+      <code>double</code> — decimales (nota, precio)<br>
+      <code>boolean</code> — verdadero/falso<br>
+      <code>char</code> — un carácter: <code>'A'</code>
+    </div>
+    <div class="concept-card">
+      <h4 style="color:var(--accent2)">Tipo referencia</h4>
+      <code>String</code> — cadena de texto<br>
+      <em style="color:var(--text3);font-size:13px;">No es primitivo: es un objeto. Siempre va entre comillas dobles <code>"texto"</code></em>
+    </div>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-top"><span class="code-lang">Java · variables de un estudiante</span><button class="copy-btn" onclick="copyCode(this,'c_vars')">copiar</button></div>
+    <pre><code id="c_vars"><span class="pkg">package</span> co.edu.iumafis.lang3;
+
+<span class="kw">public</span> <span class="kw">class</span> <span class="cls">Main</span> {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw2">void</span> <span class="fn">main</span>(String[] args) {
+
+        <span class="cmt">// ── Declaración e inicialización ──────────────────────────</span>
+        <span class="kw2">String</span>  nombre    = <span class="str">"Laura Gómez"</span>;    <span class="cmt">// nombre completo</span>
+        <span class="kw2">int</span>     codigo    = <span class="num">20241001</span>;         <span class="cmt">// código numérico entero</span>
+        <span class="kw2">int</span>     semestre  = <span class="num">5</span>;               <span class="cmt">// semestre actual</span>
+        <span class="kw2">double</span>  promedio  = <span class="num">4.2</span>;             <span class="cmt">// promedio acumulado</span>
+        <span class="kw2">boolean</span> activo    = <span class="kw">true</span>;            <span class="cmt">// true=activo, false=retirado</span>
+
+        <span class="cmt">// ── Impresión con concatenación (+) ───────────────────────</span>
+        System.out.<span class="fn">println</span>(<span class="str">"Nombre   : "</span> + nombre);
+        System.out.<span class="fn">println</span>(<span class="str">"Código   : "</span> + codigo);
+        System.out.<span class="fn">println</span>(<span class="str">"Semestre : "</span> + semestre);
+        System.out.<span class="fn">println</span>(<span class="str">"Promedio : "</span> + promedio);
+        System.out.<span class="fn">println</span>(<span class="str">"Activo   : "</span> + activo);
+
+        <span class="cmt">// ── printf para formato preciso ───────────────────────────</span>
+        System.out.<span class="fn">printf</span>(<span class="str">"Promedio formateado: %.2f%n"</span>, promedio);
+        <span class="cmt">// %.2f → 2 decimales   %n → salto de línea multiplataforma</span>
+    }
+}</code></pre>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SECCIÓN 5 — CONDICIONALES
+══════════════════════════════════════════ -->
+<section id="condicionales">
+  <h2 class="section-title"><span class="sec-icon i-orange">🔀</span>Estructuras condicionales<span class="time-badge">~25 min</span></h2>
+
+  <p>Las condicionales permiten que el programa tome decisiones. Java ofrece dos formas principales: <strong>if/else if/else</strong> para condiciones lógicas complejas, y <strong>switch</strong> para comparar un valor contra múltiples opciones fijas.</p>
+
+  <!-- if/else if/else -->
+  <h3 style="font-size:15px;font-weight:600;color:var(--text);margin:.875rem 0 .5rem;display:flex;align-items:center;gap:8px;"><span style="color:var(--warn)">▸</span> if / else if / else — clasificar una nota</h3>
+
+  <div class="code-wrap">
+    <div class="code-top"><span class="code-lang">Java · if / else if / else</span><button class="copy-btn" onclick="copyCode(this,'c_if')">copiar</button></div>
+    <pre><code id="c_if"><span class="kw2">double</span> nota = <span class="num">3.8</span>;
+<span class="kw2">String</span> estado;
+
+<span class="cmt">// if evalúa una condición booleana (true/false)</span>
+<span class="kw">if</span> (nota >= <span class="num">4.5</span>) {
+    estado = <span class="str">"Sobresaliente"</span>;
+} <span class="kw">else if</span> (nota >= <span class="num">4.0</span>) {    <span class="cmt">// solo se evalúa si la anterior fue FALSE</span>
+    estado = <span class="str">"Bueno"</span>;
+} <span class="kw">else if</span> (nota >= <span class="num">3.0</span>) {
+    estado = <span class="str">"Aprobado"</span>;
+} <span class="kw">else</span> {                         <span class="cmt">// captura cualquier otro caso</span>
+    estado = <span class="str">"Reprobado"</span>;
+}
+
+System.out.<span class="fn">println</span>(<span class="str">"Nota: "</span> + nota + <span class="str">" → "</span> + estado);
+
+<span class="cmt">// Operadores de comparación disponibles:</span>
+<span class="cmt">// ==  igual         !=  diferente</span>
+<span class="cmt">// >   mayor         <   menor</span>
+<span class="cmt">// >=  mayor o igual &lt;=  menor o igual</span>
+<span class="cmt">// &&  Y lógico      ||  O lógico    !  negación</span></code></pre>
+  </div>
+
+  <!-- switch -->
+  <h3 style="font-size:15px;font-weight:600;color:var(--text);margin:1.25rem 0 .5rem;display:flex;align-items:center;gap:8px;"><span style="color:var(--warn)">▸</span> switch — clasificar por semestre</h3>
+
+  <div class="callout callout-orange">
+    <strong>¿Cuándo usar switch?</strong> Cuando comparas la misma variable contra valores discretos y fijos. Es más legible que una cadena larga de <code>if/else if</code> para este caso. Java moderno (17+) admite la forma con flecha <code>-></code> sin necesitar <code>break</code>.
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-top"><span class="code-lang">Java · switch expression (Java 14+)</span><button class="copy-btn" onclick="copyCode(this,'c_switch')">copiar</button></div>
+    <pre><code id="c_switch"><span class="kw2">int</span> semestre = <span class="num">5</span>;
+
+<span class="cmt">// Switch expression — forma moderna con ->  (no necesita break)</span>
+<span class="kw2">String</span> ciclo = <span class="kw">switch</span> (semestre) {
+    <span class="kw">case</span> <span class="num">1</span>, <span class="num">2</span>  -> <span class="str">"Ciclo básico"</span>;
+    <span class="kw">case</span> <span class="num">3</span>, <span class="num">4</span>  -> <span class="str">"Ciclo intermedio"</span>;
+    <span class="kw">case</span> <span class="num">5</span>, <span class="num">6</span>  -> <span class="str">"Ciclo profesional"</span>;
+    <span class="kw">case</span> <span class="num">7</span>, <span class="num">8</span>  -> <span class="str">"Ciclo de profundización"</span>;
+    <span class="kw">case</span> <span class="num">9</span>, <span class="num">10</span> -> <span class="str">"Ciclo de grado"</span>;
+    <span class="kw">default</span>    -> <span class="str">"Semestre no válido"</span>;
+};
+
+System.out.<span class="fn">println</span>(<span class="str">"Semestre "</span> + semestre + <span class="str">": "</span> + ciclo);
+
+<span class="cmt">// ── Forma tradicional (compatible con Java 8+) ─────────────────</span>
+<span class="kw">switch</span> (semestre) {
+    <span class="kw">case</span> <span class="num">1</span>: <span class="kw">case</span> <span class="num">2</span>:
+        System.out.<span class="fn">println</span>(<span class="str">"Ciclo básico"</span>);
+        <span class="kw">break</span>;            <span class="cmt">// break detiene la ejecución del switch</span>
+    <span class="kw">case</span> <span class="num">5</span>:
+        System.out.<span class="fn">println</span>(<span class="str">"Ciclo profesional"</span>);
+        <span class="kw">break</span>;
+    <span class="kw">default</span>:              <span class="cmt">// caso por defecto si ninguno coincide</span>
+        System.out.<span class="fn">println</span>(<span class="str">"Otro semestre"</span>);
+}</code></pre>
+  </div>
+
+  <!-- Condicional completo integrado -->
+  <h3 style="font-size:15px;font-weight:600;color:var(--text);margin:1.25rem 0 .5rem;display:flex;align-items:center;gap:8px;"><span style="color:var(--warn)">▸</span> Integración: validar inscripción de un estudiante</h3>
+
+  <div class="code-wrap">
+    <div class="code-top"><span class="code-lang">Java · condicional con múltiples condiciones (&&, ||)</span><button class="copy-btn" onclick="copyCode(this,'c_val')">copiar</button></div>
+    <pre><code id="c_val"><span class="kw2">String</span>  nombre    = <span class="str">"Laura Gómez"</span>;
+<span class="kw2">double</span>  promedio  = <span class="num">3.6</span>;
+<span class="kw2">boolean</span> activo    = <span class="kw">true</span>;
+<span class="kw2">int</span>     semestre  = <span class="num">5</span>;
+<span class="kw2">int</span>     materias  = <span class="num">4</span>;         <span class="cmt">// materias que quiere inscribir</span>
+<span class="kw2">int</span>     maxMat    = <span class="num">6</span>;         <span class="cmt">// máximo permitido</span>
+
+<span class="cmt">// Condición compuesta: activo Y promedio suficiente Y materias válidas</span>
+<span class="kw">if</span> (activo && promedio >= <span class="num">3.0</span> && materias <= maxMat) {
+    System.out.<span class="fn">println</span>(nombre + <span class="str">": inscripción AUTORIZADA"</span>);
+    System.out.<span class="fn">printf</span>(<span class="str">"  Promedio: %.1f | Semestre: %d | Materias: %d%n"</span>,
+                       promedio, semestre, materias);
+} <span class="kw">else if</span> (!activo) {
+    System.out.<span class="fn">println</span>(nombre + <span class="str">": RECHAZADA — estudiante inactivo"</span>);
+} <span class="kw">else if</span> (promedio < <span class="num">3.0</span>) {
+    System.out.<span class="fn">println</span>(nombre + <span class="str">": RECHAZADA — promedio insuficiente ("</span>
+                       + promedio + <span class="str">")"</span>);
+} <span class="kw">else</span> {
+    System.out.<span class="fn">println</span>(nombre + <span class="str">": RECHAZADA — excede máximo de materias"</span>);
+}</code></pre>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SECCIÓN 6 — LISTAS
+══════════════════════════════════════════ -->
+<section id="listas">
+  <h2 class="section-title"><span class="sec-icon i-teal">📋</span>Listas dinámicas — ArrayList<span class="time-badge">~25 min</span></h2>
+
+  <div class="callout callout-blue">
+    <strong>¿Por qué listas?</strong> Un arreglo (<code>int[]</code>) tiene tamaño fijo. Un <strong>ArrayList</strong> crece o encoge dinámicamente según necesites. Es la estructura de colección más usada en Java para manejar grupos de objetos del mismo tipo.
+  </div>
+
+  <!-- CRUD sobre lista -->
+  <div class="step-card">
+    <div class="step-header" onclick="toggleStep(this)">
+      <span class="step-num">A</span>
+      <div class="step-title-block"><div class="step-title">Crear y agregar elementos</div><div class="step-sub">import java.util.ArrayList — operaciones básicas</div></div>
+      <span class="step-toggle">▶</span>
+    </div>
+    <div class="step-body">
+      <div class="code-wrap">
+        <div class="code-top"><span class="code-lang">Java · ArrayList — crear y agregar</span><button class="copy-btn" onclick="copyCode(this,'c_list1')">copiar</button></div>
+        <pre><code id="c_list1"><span class="pkg">import</span> java.util.ArrayList;   <span class="cmt">// importar antes del "public class"</span>
+
+<span class="cmt">// ArrayList&lt;Tipo&gt; — el tipo va entre &lt; &gt; (genérico)</span>
+ArrayList&lt;<span class="kw2">String</span>&gt; nombres = <span class="kw">new</span> ArrayList&lt;&gt;();
+
+<span class="cmt">// add() agrega al final de la lista</span>
+nombres.<span class="fn">add</span>(<span class="str">"Laura Gómez"</span>);
+nombres.<span class="fn">add</span>(<span class="str">"Andrés Ríos"</span>);
+nombres.<span class="fn">add</span>(<span class="str">"Camila Torres"</span>);
+nombres.<span class="fn">add</span>(<span class="str">"Diego Muñoz"</span>);
+
+System.out.<span class="fn">println</span>(<span class="str">"Total estudiantes: "</span> + nombres.<span class="fn">size</span>());  <span class="cmt">// size() → cantidad</span>
+System.out.<span class="fn">println</span>(<span class="str">"Primero: "</span> + nombres.<span class="fn">get</span>(<span class="num">0</span>));          <span class="cmt">// índice comienza en 0</span>
+System.out.<span class="fn">println</span>(<span class="str">"Último : "</span> + nombres.<span class="fn">get</span>(nombres.<span class="fn">size</span>() - <span class="num">1</span>));</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="step-card">
+    <div class="step-header" onclick="toggleStep(this)">
+      <span class="step-num">B</span>
+      <div class="step-title-block"><div class="step-title">Recorrer la lista — for-each y for clásico</div><div class="step-sub">Iterar sobre todos los elementos</div></div>
+      <span class="step-toggle">▶</span>
+    </div>
+    <div class="step-body">
+      <div class="code-wrap">
+        <div class="code-top"><span class="code-lang">Java · recorrer ArrayList de dos formas</span><button class="copy-btn" onclick="copyCode(this,'c_list2')">copiar</button></div>
+        <pre><code id="c_list2"><span class="cmt">// ── Forma 1: for-each — cuando solo necesitas el valor ────────</span>
+System.out.<span class="fn">println</span>(<span class="str">"--- Lista de estudiantes ---"</span>);
+<span class="kw">for</span> (<span class="kw2">String</span> nombre : nombres) {     <span class="cmt">// lee: "para cada nombre en nombres"</span>
+    System.out.<span class="fn">println</span>(<span class="str">"  • "</span> + nombre);
+}
+
+<span class="cmt">// ── Forma 2: for clásico — cuando necesitas el índice ─────────</span>
+System.out.<span class="fn">println</span>(<span class="str">"--- Con numeración ---"</span>);
+<span class="kw">for</span> (<span class="kw2">int</span> i = <span class="num">0</span>; i < nombres.<span class="fn">size</span>(); i++) {
+    System.out.<span class="fn">printf</span>(<span class="str">"  %d. %s%n"</span>, i + <span class="num">1</span>, nombres.<span class="fn">get</span>(i));
+}
+<span class="cmt">// i=0 → inicio  |  i &lt; size() → condición  |  i++ → incremento</span></code></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="step-card">
+    <div class="step-header" onclick="toggleStep(this)">
+      <span class="step-num">C</span>
+      <div class="step-title-block"><div class="step-title">Buscar, modificar y eliminar</div><div class="step-sub">contains, set, remove, clear</div></div>
+      <span class="step-toggle">▶</span>
+    </div>
+    <div class="step-body">
+      <div class="code-wrap">
+        <div class="code-top"><span class="code-lang">Java · operaciones sobre ArrayList</span><button class="copy-btn" onclick="copyCode(this,'c_list3')">copiar</button></div>
+        <pre><code id="c_list3"><span class="cmt">// ── Buscar ────────────────────────────────────────────────────</span>
+<span class="kw2">boolean</span> existe = nombres.<span class="fn">contains</span>(<span class="str">"Andrés Ríos"</span>);   <span class="cmt">// true/false</span>
+<span class="kw2">int</span>     pos    = nombres.<span class="fn">indexOf</span>(<span class="str">"Andrés Ríos"</span>);    <span class="cmt">// -1 si no existe</span>
+System.out.<span class="fn">println</span>(<span class="str">"¿Existe? "</span> + existe + <span class="str">" en posición "</span> + pos);
+
+<span class="cmt">// ── Modificar ─────────────────────────────────────────────────</span>
+nombres.<span class="fn">set</span>(<span class="num">1</span>, <span class="str">"Andrés Ríos Peña"</span>);     <span class="cmt">// reemplaza posición 1</span>
+
+<span class="cmt">// ── Eliminar ──────────────────────────────────────────────────</span>
+nombres.<span class="fn">remove</span>(<span class="str">"Diego Muñoz"</span>);          <span class="cmt">// elimina por valor</span>
+nombres.<span class="fn">remove</span>(<span class="num">0</span>);                     <span class="cmt">// elimina por índice (int)</span>
+
+System.out.<span class="fn">println</span>(<span class="str">"Después de eliminar: "</span> + nombres);
+System.out.<span class="fn">println</span>(<span class="str">"Tamaño: "</span> + nombres.<span class="fn">size</span>());
+
+<span class="cmt">// ── Verificar vacía y limpiar ─────────────────────────────────</span>
+<span class="kw">if</span> (!nombres.<span class="fn">isEmpty</span>()) {
+    System.out.<span class="fn">println</span>(<span class="str">"La lista tiene "</span> + nombres.<span class="fn">size</span>() + <span class="str">" elementos"</span>);
+}
+nombres.<span class="fn">clear</span>();     <span class="cmt">// elimina TODOS los elementos</span></code></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista con condicional -->
+  <h3 style="font-size:15px;font-weight:600;color:var(--text);margin:1.25rem 0 .5rem;display:flex;align-items:center;gap:8px;"><span style="color:var(--accent2)">▸</span> Lista + condicional: filtrar estudiantes aprobados</h3>
+  <div class="code-wrap">
+    <div class="code-top"><span class="code-lang">Java · ArrayList de doubles + filtro con if</span><button class="copy-btn" onclick="copyCode(this,'c_filtro')">copiar</button></div>
+    <pre><code id="c_filtro"><span class="pkg">import</span> java.util.ArrayList;
+
+ArrayList&lt;<span class="kw2">String</span>&gt; estudiantes = <span class="kw">new</span> ArrayList&lt;&gt;();
+ArrayList&lt;<span class="kw2">Double</span>&gt; promedios    = <span class="kw">new</span> ArrayList&lt;&gt;();
+<span class="cmt">// Double (con D mayúscula) es el "wrapper" de double para usar en colecciones</span>
+
+estudiantes.<span class="fn">add</span>(<span class="str">"Laura"</span>);  promedios.<span class="fn">add</span>(<span class="num">4.2</span>);
+estudiantes.<span class="fn">add</span>(<span class="str">"Andrés"</span>); promedios.<span class="fn">add</span>(<span class="num">2.8</span>);
+estudiantes.<span class="fn">add</span>(<span class="str">"Camila"</span>); promedios.<span class="fn">add</span>(<span class="num">3.5</span>);
+estudiantes.<span class="fn">add</span>(<span class="str">"Diego"</span>);  promedios.<span class="fn">add</span>(<span class="num">1.9</span>);
+estudiantes.<span class="fn">add</span>(<span class="str">"Sofía"</span>);  promedios.<span class="fn">add</span>(<span class="num">4.7</span>);
+
+System.out.<span class="fn">println</span>(<span class="str">"=== REPORTE DE NOTAS ==="</span>);
+<span class="kw2">int</span> aprobados = <span class="num">0</span>;
+<span class="kw2">int</span> reprobados = <span class="num">0</span>;
+
+<span class="kw">for</span> (<span class="kw2">int</span> i = <span class="num">0</span>; i < estudiantes.<span class="fn">size</span>(); i++) {
+    <span class="kw2">String</span> nombre   = estudiantes.<span class="fn">get</span>(i);
+    <span class="kw2">double</span> promedio = promedios.<span class="fn">get</span>(i);
+
+    <span class="kw2">String</span> estado = (promedio >= <span class="num">3.0</span>) ? <span class="str">"✓ APROBADO"</span> : <span class="str">"✗ REPROBADO"</span>;
+    <span class="cmt">// ↑ operador ternario: condición ? valor_si_true : valor_si_false</span>
+
+    System.out.<span class="fn">printf</span>(<span class="str">"  %-10s  %.1f  %s%n"</span>, nombre, promedio, estado);
+
+    <span class="kw">if</span> (promedio >= <span class="num">3.0</span>) aprobados++;
+    <span class="kw">else</span>                  reprobados++;
+}
+
+System.out.<span class="fn">printf</span>(<span class="str">"%nAprobados: %d | Reprobados: %d%n"</span>, aprobados, reprobados);</code></pre>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SECCIÓN 7 — MÉTODOS
+══════════════════════════════════════════ -->
+<section id="metodos">
+  <h2 class="section-title"><span class="sec-icon i-purple">🔧</span>Métodos (funciones)<span class="time-badge">~25 min</span></h2>
+
+  <div class="callout callout-purple">
+    <strong>¿Por qué métodos?</strong> Un método encapsula lógica reutilizable. En lugar de repetir el mismo bloque de código 5 veces, lo defines una vez y lo llamas con distintos argumentos. <em>Principio DRY: Don't Repeat Yourself.</em>
+  </div>
+
+  <div class="concept-grid">
+    <div class="concept-card">
+      <h4 style="color:var(--accent4)">Anatomía de un método</h4>
+      <code style="font-size:12px;display:block;line-height:2;">
+        modificador  tipoRetorno  nombre(parámetros)<br>
+        <span style="color:#ff7b72">public static</span> <span style="color:#f0883e">double</span> <span style="color:#d2a8ff">calcular</span>(<span style="color:#f0883e">double</span> n)
+      </code>
+    </div>
+    <div class="concept-card">
+      <h4 style="color:var(--accent4)">Tipos de retorno</h4>
+      <code>void</code> — no retorna nada<br>
+      <code>int, double…</code> — retorna ese tipo<br>
+      <code>String</code> — retorna texto<br>
+      <code>boolean</code> — retorna true/false
+    </div>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-top"><span class="code-lang">Java · métodos con parámetros y retorno</span><button class="copy-btn" onclick="copyCode(this,'c_met')">copiar</button></div>
+    <pre><code id="c_met"><span class="pkg">package</span> co.edu.iumafis.lang3;
+
+<span class="kw">public</span> <span class="kw">class</span> <span class="cls">Main</span> {
+
+    <span class="cmt">// ── Método 1: sin retorno (void) ──────────────────────────────</span>
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw2">void</span> <span class="fn">imprimirSeparador</span>(<span class="kw2">String</span> titulo) {
+        System.out.<span class="fn">println</span>(<span class="str">"\n═══ "</span> + titulo + <span class="str">" ═══"</span>);
+    }
+
+    <span class="cmt">// ── Método 2: retorna String ──────────────────────────────────</span>
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw2">String</span> <span class="fn">clasificarNota</span>(<span class="kw2">double</span> nota) {
+        <span class="kw">if</span>      (nota >= <span class="num">4.5</span>) <span class="kw">return</span> <span class="str">"Sobresaliente"</span>;
+        <span class="kw">else if</span> (nota >= <span class="num">4.0</span>) <span class="kw">return</span> <span class="str">"Bueno"</span>;
+        <span class="kw">else if</span> (nota >= <span class="num">3.0</span>) <span class="kw">return</span> <span class="str">"Aprobado"</span>;
+        <span class="kw">else</span>                  <span class="kw">return</span> <span class="str">"Reprobado"</span>;
+    }
+
+    <span class="cmt">// ── Método 3: retorna double — calcula promedio de lista ──────</span>
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw2">double</span> <span class="fn">calcularPromedio</span>(ArrayList&lt;<span class="kw2">Double</span>&gt; notas) {
+        <span class="kw">if</span> (notas.<span class="fn">isEmpty</span>()) <span class="kw">return</span> <span class="num">0.0</span>;
+        <span class="kw2">double</span> suma = <span class="num">0.0</span>;
+        <span class="kw">for</span> (<span class="kw2">double</span> n : notas) suma += n;
+        <span class="kw">return</span> suma / notas.<span class="fn">size</span>();
+    }
+
+    <span class="cmt">// ── Método 4: retorna boolean ─────────────────────────────────</span>
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw2">boolean</span> <span class="fn">puedeInscribir</span>(<span class="kw2">double</span> promedio, <span class="kw2">boolean</span> activo) {
+        <span class="kw">return</span> activo && promedio >= <span class="num">3.0</span>;
+        <span class="cmt">// return devuelve el valor y termina el método</span>
+    }
+
+    <span class="cmt">// ── main: llama a los métodos ─────────────────────────────────</span>
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw2">void</span> <span class="fn">main</span>(String[] args) {
+        <span class="fn">imprimirSeparador</span>(<span class="str">"REPORTE"</span>);
+
+        <span class="kw2">double</span> nota = <span class="num">3.9</span>;
+        System.out.<span class="fn">println</span>(<span class="str">"Nota: "</span> + nota + <span class="str">" → "</span> + <span class="fn">clasificarNota</span>(nota));
+
+        ArrayList&lt;<span class="kw2">Double</span>&gt; mis_notas = <span class="kw">new</span> ArrayList&lt;&gt;();
+        mis_notas.<span class="fn">add</span>(<span class="num">3.5</span>); mis_notas.<span class="fn">add</span>(<span class="num">4.0</span>); mis_notas.<span class="fn">add</span>(<span class="num">4.2</span>);
+        System.out.<span class="fn">printf</span>(<span class="str">"Promedio: %.2f%n"</span>, <span class="fn">calcularPromedio</span>(mis_notas));
+
+        System.out.<span class="fn">println</span>(<span class="str">"¿Puede inscribir? "</span> + <span class="fn">puedeInscribir</span>(<span class="num">3.9</span>, <span class="kw">true</span>));
+    }
+}</code></pre>
+  </div>
+
+  <div style="background:rgba(240,136,62,.06);border:1px solid rgba(240,136,62,.2);border-radius:var(--r);padding:.875rem 1rem;font-size:14px;">
+    <strong style="color:var(--warn)">💡 Recuerda agregar el import:</strong> Si usas <code>ArrayList</code> dentro de un método, necesitas <code>import java.util.ArrayList;</code> al inicio del archivo, antes de la declaración de la clase.
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SECCIÓN 8 — MÚLTIPLES CLASES
+══════════════════════════════════════════ -->
+<section id="multiclase">
+  <h2 class="section-title"><span class="sec-icon i-red">🏗️</span>Múltiples clases — separar responsabilidades<span class="time-badge">~25 min</span></h2>
+
+  <div class="callout callout-blue">
+    <strong>Principio de responsabilidad única:</strong> Cada clase debe tener una sola razón para existir. <code>Estudiante</code> modela datos, <code>GestorEstudiantes</code> maneja la lógica de negocio, <code>Main</code> coordina la ejecución. Este patrón es la base de la Programación Orientada a Objetos.
+  </div>
+
+  <p>Crea <strong>dos clases nuevas</strong> dentro del mismo paquete <code>co.edu.iumafis.lang3</code>. En NetBeans: clic derecho sobre el paquete → <span class="menu-path">New → Java Class</span>.</p>
+
+  <!-- Clase Estudiante -->
+  <div class="step-card">
+    <div class="step-header" onclick="toggleStep(this)">
+      <span class="step-num">1</span>
+      <div class="step-title-block"><div class="step-title">Crear Estudiante.java — clase modelo</div><div class="step-sub">Agrupa los datos de un estudiante</div></div>
+      <span class="step-toggle">▶</span>
+    </div>
+    <div class="step-body">
+      <div class="callout callout-purple">
+        <strong>Clase modelo (POJO):</strong> Plain Old Java Object — una clase cuyos atributos representan datos reales. No contiene lógica de negocio compleja. Los atributos son <code>private</code> (encapsulamiento) y se accede a ellos mediante <em>getters/setters</em>.
+      </div>
+      <div class="code-wrap">
+        <div class="code-top"><span class="code-lang">Java · Estudiante.java</span><button class="copy-btn" onclick="copyCode(this,'c_est')">copiar</button></div>
+        <pre><code id="c_est"><span class="pkg">package</span> co.edu.iumafis.lang3;
+
+<span class="kw">public</span> <span class="kw">class</span> <span class="cls">Estudiante</span> {
+
+    <span class="cmt">// ── Atributos (campos) ─────────────────────────────────────────</span>
+    <span class="cmt">// private: solo accesibles dentro de esta clase (encapsulamiento)</span>
+    <span class="kw">private</span> <span class="kw2">String</span>  nombre;
+    <span class="kw">private</span> <span class="kw2">int</span>     codigo;
+    <span class="kw">private</span> <span class="kw2">int</span>     semestre;
+    <span class="kw">private</span> <span class="kw2">double</span>  promedio;
+    <span class="kw">private</span> <span class="kw2">boolean</span> activo;
+
+    <span class="cmt">// ── Constructor ────────────────────────────────────────────────</span>
+    <span class="cmt">// Método especial: mismo nombre que la clase, sin tipo de retorno</span>
+    <span class="cmt">// Se llama con "new Estudiante(...)" y establece el estado inicial</span>
+    <span class="kw">public</span> <span class="cls">Estudiante</span>(<span class="kw2">String</span> nombre, <span class="kw2">int</span> codigo, <span class="kw2">int</span> semestre,
+                       <span class="kw2">double</span> promedio, <span class="kw2">boolean</span> activo) {
+        <span class="kw">this</span>.nombre   = nombre;    <span class="cmt">// "this" distingue atributo de parámetro</span>
+        <span class="kw">this</span>.codigo   = codigo;
+        <span class="kw">this</span>.semestre = semestre;
+        <span class="kw">this</span>.promedio = promedio;
+        <span class="kw">this</span>.activo   = activo;
+    }
+
+    <span class="cmt">// ── Getters — métodos que devuelven el valor de un atributo ────</span>
+    <span class="kw">public</span> <span class="kw2">String</span>  <span class="fn">getNombre</span>()   { <span class="kw">return</span> nombre;   }
+    <span class="kw">public</span> <span class="kw2">int</span>     <span class="fn">getCodigo</span>()   { <span class="kw">return</span> codigo;   }
+    <span class="kw">public</span> <span class="kw2">int</span>     <span class="fn">getSemestre</span>() { <span class="kw">return</span> semestre; }
+    <span class="kw">public</span> <span class="kw2">double</span>  <span class="fn">getPromedio</span>() { <span class="kw">return</span> promedio; }
+    <span class="kw">public</span> <span class="kw2">boolean</span> <span class="fn">isActivo</span>()    { <span class="kw">return</span> activo;   }
+
+    <span class="cmt">// ── Setter — modificar el promedio después de creación ─────────</span>
+    <span class="kw">public</span> <span class="kw2">void</span> <span class="fn">setPromedio</span>(<span class="kw2">double</span> promedio) {
+        <span class="kw">if</span> (promedio >= <span class="num">0.0</span> && promedio <= <span class="num">5.0</span>)  <span class="cmt">// validación en el setter</span>
+            <span class="kw">this</span>.promedio = promedio;
+    }
+
+    <span class="cmt">// ── toString — representación textual del objeto ───────────────</span>
+    <span class="cmt">// Se llama automáticamente cuando usas el objeto en un println</span>
+    <span class="ann">@Override</span>
+    <span class="kw">public</span> <span class="kw2">String</span> <span class="fn">toString</span>() {
+        <span class="kw">return</span> <span class="kw2">String</span>.<span class="fn">format</span>(<span class="str">"[%d] %-15s | S%d | %.1f | %s"</span>,
+               codigo, nombre, semestre, promedio,
+               activo ? <span class="str">"Activo"</span> : <span class="str">"Inactivo"</span>);
+    }
+}</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Clase GestorEstudiantes -->
+  <div class="step-card">
+    <div class="step-header" onclick="toggleStep(this)">
+      <span class="step-num">2</span>
+      <div class="step-title-block"><div class="step-title">Crear GestorEstudiantes.java — lógica de negocio</div><div class="step-sub">CRUD completo con ArrayList de objetos</div></div>
+      <span class="step-toggle">▶</span>
+    </div>
+    <div class="step-body">
+      <div class="code-wrap">
+        <div class="code-top"><span class="code-lang">Java · GestorEstudiantes.java</span><button class="copy-btn" onclick="copyCode(this,'c_gest')">copiar</button></div>
+        <pre><code id="c_gest"><span class="pkg">package</span> co.edu.iumafis.lang3;
+
+<span class="pkg">import</span> java.util.ArrayList;
+
+<span class="kw">public</span> <span class="kw">class</span> <span class="cls">GestorEstudiantes</span> {
+
+    <span class="cmt">// Lista interna de objetos Estudiante</span>
+    <span class="kw">private</span> ArrayList&lt;<span class="cls">Estudiante</span>&gt; lista = <span class="kw">new</span> ArrayList&lt;&gt;();
+
+    <span class="cmt">// ── AGREGAR ────────────────────────────────────────────────────</span>
+    <span class="kw">public</span> <span class="kw2">void</span> <span class="fn">agregar</span>(<span class="cls">Estudiante</span> e) {
+        lista.<span class="fn">add</span>(e);
+        System.out.<span class="fn">println</span>(<span class="str">"✓ Agregado: "</span> + e.<span class="fn">getNombre</span>());
+    }
+
+    <span class="cmt">// ── LISTAR TODOS ───────────────────────────────────────────────</span>
+    <span class="kw">public</span> <span class="kw2">void</span> <span class="fn">listar</span>() {
+        <span class="kw">if</span> (lista.<span class="fn">isEmpty</span>()) {
+            System.out.<span class="fn">println</span>(<span class="str">"  (lista vacía)"</span>);
+            <span class="kw">return</span>;
+        }
+        System.out.<span class="fn">println</span>(<span class="str">"Código | Nombre          | Sem | Prom | Estado"</span>);
+        System.out.<span class="fn">println</span>(<span class="str">"─".repeat(55)</span>);
+        <span class="kw">for</span> (<span class="cls">Estudiante</span> e : lista) {
+            System.out.<span class="fn">println</span>(e);   <span class="cmt">// llama a toString() automáticamente</span>
+        }
+        System.out.<span class="fn">println</span>(<span class="str">"Total: "</span> + lista.<span class="fn">size</span>() + <span class="str">" estudiante(s)"</span>);
+    }
+
+    <span class="cmt">// ── BUSCAR POR CÓDIGO ──────────────────────────────────────────</span>
+    <span class="kw">public</span> <span class="cls">Estudiante</span> <span class="fn">buscarPorCodigo</span>(<span class="kw2">int</span> codigo) {
+        <span class="kw">for</span> (<span class="cls">Estudiante</span> e : lista) {
+            <span class="kw">if</span> (e.<span class="fn">getCodigo</span>() == codigo) <span class="kw">return</span> e;
+        }
+        <span class="kw">return</span> <span class="kw">null</span>;   <span class="cmt">// null = "no encontrado"</span>
+    }
+
+    <span class="cmt">// ── FILTRAR APROBADOS ──────────────────────────────────────────</span>
+    <span class="kw">public</span> ArrayList&lt;<span class="cls">Estudiante</span>&gt; <span class="fn">obtenerAprobados</span>() {
+        ArrayList&lt;<span class="cls">Estudiante</span>&gt; resultado = <span class="kw">new</span> ArrayList&lt;&gt;();
+        <span class="kw">for</span> (<span class="cls">Estudiante</span> e : lista) {
+            <span class="kw">if</span> (e.<span class="fn">getPromedio</span>() >= <span class="num">3.0</span> && e.<span class="fn">isActivo</span>()) {
+                resultado.<span class="fn">add</span>(e);
+            }
+        }
+        <span class="kw">return</span> resultado;
+    }
+
+    <span class="cmt">// ── CALCULAR PROMEDIO GENERAL ──────────────────────────────────</span>
+    <span class="kw">public</span> <span class="kw2">double</span> <span class="fn">promedioGeneral</span>() {
+        <span class="kw">if</span> (lista.<span class="fn">isEmpty</span>()) <span class="kw">return</span> <span class="num">0.0</span>;
+        <span class="kw2">double</span> suma = <span class="num">0.0</span>;
+        <span class="kw">for</span> (<span class="cls">Estudiante</span> e : lista) suma += e.<span class="fn">getPromedio</span>();
+        <span class="kw">return</span> suma / lista.<span class="fn">size</span>();
+    }
+
+    <span class="cmt">// ── ELIMINAR POR CÓDIGO ────────────────────────────────────────</span>
+    <span class="kw">public</span> <span class="kw2">boolean</span> <span class="fn">eliminar</span>(<span class="kw2">int</span> codigo) {
+        <span class="cls">Estudiante</span> encontrado = <span class="fn">buscarPorCodigo</span>(codigo);
+        <span class="kw">if</span> (encontrado != <span class="kw">null</span>) {
+            lista.<span class="fn">remove</span>(encontrado);
+            System.out.<span class="fn">println</span>(<span class="str">"✓ Eliminado: "</span> + encontrado.<span class="fn">getNombre</span>());
+            <span class="kw">return</span> <span class="kw">true</span>;
+        }
+        System.out.<span class="fn">println</span>(<span class="str">"✗ Código "</span> + codigo + <span class="str">" no encontrado"</span>);
+        <span class="kw">return</span> <span class="kw">false</span>;
+    }
+}</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main actualizado -->
+  <div class="step-card">
+    <div class="step-header" onclick="toggleStep(this)">
+      <span class="step-num">3</span>
+      <div class="step-title-block"><div class="step-title">Actualizar Main.java — usar las clases creadas</div><div class="step-sub">El main solo coordina: crea gestor, instancia objetos, llama métodos</div></div>
+      <span class="step-toggle">▶</span>
+    </div>
+    <div class="step-body">
+      <div class="code-wrap">
+        <div class="code-top"><span class="code-lang">Java · Main.java — versión final de la sesión</span><button class="copy-btn" onclick="copyCode(this,'c_main_final')">copiar</button></div>
+        <pre><code id="c_main_final"><span class="pkg">package</span> co.edu.iumafis.lang3;
+
+<span class="pkg">import</span> java.util.ArrayList;
+
+<span class="kw">public</span> <span class="kw">class</span> <span class="cls">Main</span> {
+
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw2">void</span> <span class="fn">main</span>(String[] args) {
+
+        <span class="cls">GestorEstudiantes</span> gestor = <span class="kw">new</span> <span class="cls">GestorEstudiantes</span>();
+
+        <span class="cmt">// ── Poblar el sistema ─────────────────────────────────────────</span>
+        gestor.<span class="fn">agregar</span>(<span class="kw">new</span> <span class="cls">Estudiante</span>(<span class="str">"Laura Gómez"</span>,   <span class="num">20241001</span>, <span class="num">5</span>, <span class="num">4.2</span>, <span class="kw">true</span>));
+        gestor.<span class="fn">agregar</span>(<span class="kw">new</span> <span class="cls">Estudiante</span>(<span class="str">"Andrés Ríos"</span>,   <span class="num">20241002</span>, <span class="num">3</span>, <span class="num">2.8</span>, <span class="kw">true</span>));
+        gestor.<span class="fn">agregar</span>(<span class="kw">new</span> <span class="cls">Estudiante</span>(<span class="str">"Camila Torres"</span>, <span class="num">20241003</span>, <span class="num">5</span>, <span class="num">3.9</span>, <span class="kw">true</span>));
+        gestor.<span class="fn">agregar</span>(<span class="kw">new</span> <span class="cls">Estudiante</span>(<span class="str">"Diego Muñoz"</span>,   <span class="num">20241004</span>, <span class="num">4</span>, <span class="num">1.7</span>, <span class="kw">false</span>));
+        gestor.<span class="fn">agregar</span>(<span class="kw">new</span> <span class="cls">Estudiante</span>(<span class="str">"Sofía Herrera"</span>, <span class="num">20241005</span>, <span class="num">6</span>, <span class="num">4.8</span>, <span class="kw">true</span>));
+
+        <span class="cmt">// ── Listar todos ───────────────────────────────────────────────</span>
+        System.out.<span class="fn">println</span>(<span class="str">"\n=== TODOS LOS ESTUDIANTES ==="</span>);
+        gestor.<span class="fn">listar</span>();
+
+        <span class="cmt">// ── Buscar por código ──────────────────────────────────────────</span>
+        System.out.<span class="fn">println</span>(<span class="str">"\n=== BUSCAR ==="</span>);
+        <span class="cls">Estudiante</span> encontrado = gestor.<span class="fn">buscarPorCodigo</span>(<span class="num">20241003</span>);
+        <span class="kw">if</span> (encontrado != <span class="kw">null</span>)
+            System.out.<span class="fn">println</span>(<span class="str">"Encontrado: "</span> + encontrado);
+        <span class="kw">else</span>
+            System.out.<span class="fn">println</span>(<span class="str">"No encontrado"</span>);
+
+        <span class="cmt">// ── Listar aprobados ───────────────────────────────────────────</span>
+        System.out.<span class="fn">println</span>(<span class="str">"\n=== APROBADOS Y ACTIVOS ==="</span>);
+        ArrayList&lt;<span class="cls">Estudiante</span>&gt; aprobados = gestor.<span class="fn">obtenerAprobados</span>();
+        <span class="kw">for</span> (<span class="cls">Estudiante</span> e : aprobados) System.out.<span class="fn">println</span>(<span class="str">"  ✓ "</span> + e);
+
+        <span class="cmt">// ── Promedio general ───────────────────────────────────────────</span>
+        System.out.<span class="fn">printf</span>(<span class="str">"%n=== ESTADÍSTICAS ===%n"</span>);
+        System.out.<span class="fn">printf</span>(<span class="str">"Promedio general del grupo: %.2f%n"</span>, gestor.<span class="fn">promedioGeneral</span>());
+        System.out.<span class="fn">println</span>(<span class="str">"Aprobados: "</span> + aprobados.<span class="fn">size</span>() + <span class="str">"/"</span> + <span class="num">5</span>);
+    }
+}</code></pre>
+      </div>
+      <div class="result-box">
+        <div class="label-tag lt-green">✅ Ejecuta con F6 — resultado esperado</div>
+        La consola muestra los 5 estudiantes en tabla, la búsqueda de Camila Torres, la lista de aprobados activos (Laura, Camila, Sofía) y el promedio general.
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de errores frecuentes -->
+  <h3 style="font-size:15px;font-weight:600;color:var(--text);margin:1.5rem 0 .75rem;display:flex;align-items:center;gap:8px;"><span style="color:var(--danger)">⚠️</span>Errores frecuentes en esta sesión</h3>
+  <div style="overflow-x:auto;">
+    <table class="error-table">
+      <thead><tr><th>Error</th><th>Causa</th><th>Solución</th></tr></thead>
+      <tbody>
+        <tr><td><span class="error-code">cannot find symbol: Estudiante</span></td><td>Falta el mismo paquete en ambas clases, o la clase aún no fue creada.</td><td>Verifica que <code>Estudiante.java</code> exista en <code>co.edu.iumafis.lang3</code> y tenga la declaración de paquete correcta.</td></tr>
+        <tr><td><span class="error-code">incompatible types: int cannot be converted to Integer</span></td><td>Mezclando tipo primitivo y wrapper en ArrayList.</td><td>Usa <code>ArrayList&lt;Double&gt;</code> con <code>double</code> — Java hace autoboxing automático.</td></tr>
+        <tr><td><span class="error-code">NullPointerException</span></td><td>Llamar un método sobre <code>null</code> (buscarPorCodigo retornó null y no se verificó).</td><td>Siempre verifica: <code>if (resultado != null)</code> antes de usar el objeto retornado.</td></tr>
+        <tr><td><span class="error-code">IndexOutOfBoundsException</span></td><td>Acceder a un índice que no existe en la lista.</td><td>Verifica siempre: <code>i &lt; lista.size()</code> y que la lista no esté vacía con <code>!lista.isEmpty()</code>.</td></tr>
+        <tr><td><span class="error-code">'; ' expected / reached end of file</span></td><td>Falta punto y coma, o llave de cierre.</td><td>Cuenta <code>{</code> y <code>}</code> — deben ser iguales en cada clase. NetBeans subraya en rojo la línea exacta.</td></tr>
+        <tr><td><span class="error-code">non-static method cannot be referenced from a static context</span></td><td>Llamar un método de instancia directamente en <code>main</code> sin crear el objeto.</td><td>Crea el objeto primero: <code>GestorEstudiantes g = new GestorEstudiantes();</code>, luego <code>g.listar();</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SECCIÓN 9 — RETOS
+══════════════════════════════════════════ -->
+<section id="retos">
+  <h2 class="section-title"><span class="sec-icon i-purple">🏆</span>Retos parciales<span class="time-badge">~20 min</span></h2>
+  <p>Los retos son individuales. El código resultante será la base del <strong>entregable</strong> descrito en la siguiente sección. Trabaja en el mismo proyecto Maven.</p>
+
+  <!-- RETO 1 -->
+  <div class="reto-card reto-1">
+    <div class="reto-header">
+      <span class="reto-badge">Reto 1 · Básico</span>
+      <span class="reto-title" style="color:var(--accent3)">Ampliar Estudiante con método de clasificación</span>
+    </div>
+    <div class="reto-body">
+      <p class="reto-enunciado">
+        Agrega el método <code>getEstado()</code> directamente en la clase <code>Estudiante</code> usando <code>if/else if/else</code>. El método no recibe parámetros y retorna un <code>String</code> con la clasificación (<strong>Sobresaliente / Bueno / Aprobado / Reprobado</strong>) basándose en el atributo <code>promedio</code> ya existente. Luego actualiza <code>toString()</code> para que incluya ese estado.
+      </p>
+      <div class="reto-criterios">
+        <div class="label-tag" style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Criterios de éxito</div>
+        <div class="criterio">El método <code>getEstado()</code> es <code>public</code> y retorna <code>String</code></div>
+        <div class="criterio">Cubre los 4 rangos de nota correctamente</div>
+        <div class="criterio">El <code>toString()</code> actualizado muestra el estado al ejecutar <code>gestor.listar()</code></div>
+        <div class="criterio">No modifica los atributos existentes ni el constructor</div>
+      </div>
+      <details class="hint">
+        <summary>Ver pista</summary>
+        <div class="hint-body">El método va dentro de <code>Estudiante</code>, después de los getters existentes. Usa directamente el atributo <code>promedio</code> (sin getter — está en la misma clase). En <code>toString()</code> agrega: <code>+ " | " + getEstado()</code> al final del String retornado.</div>
+      </details>
+    </div>
+  </div>
+
+  <!-- RETO 2 -->
+  <div class="reto-card reto-2">
+    <div class="reto-header">
+      <span class="reto-badge">Reto 2 · Intermedio</span>
+      <span class="reto-title" style="color:var(--accent2)">Método de estadísticas por semestre en GestorEstudiantes</span>
+    </div>
+    <div class="reto-body">
+      <p class="reto-enunciado">
+        Agrega el método <code>reportePorSemestre(int semestre)</code> en <code>GestorEstudiantes</code>. El método debe recorrer la lista, imprimir los estudiantes cuyo semestre coincida con el parámetro, y al final mostrar cuántos son y cuál es su promedio grupal. Pruébalo en <code>Main</code> buscando semestre 5.
+      </p>
+      <div class="reto-criterios">
+        <div class="label-tag" style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Criterios de éxito</div>
+        <div class="criterio">Solo aparecen estudiantes del semestre solicitado</div>
+        <div class="criterio">Si no hay estudiantes en ese semestre, imprime un mensaje claro</div>
+        <div class="criterio">El promedio grupal se calcula correctamente (no dividir por cero)</div>
+        <div class="criterio">Se invoca desde <code>Main</code> y produce salida visible en consola</div>
+      </div>
+      <details class="hint">
+        <summary>Ver pista</summary>
+        <div class="hint-body">
+          Declara un contador y una suma acumuladora antes del <code>for</code>. Dentro del ciclo, usa <code>if (e.getSemestre() == semestre)</code> para filtrar. Al salir del ciclo, verifica si el contador es 0 antes de dividir para el promedio.
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <!-- RETO 3 -->
+  <div class="reto-card reto-3">
+    <div class="reto-header">
+      <span class="reto-badge">Reto 3 · Avanzado · Opcional</span>
+      <span class="reto-title" style="color:var(--accent4)">Clase Docente y relación con Estudiante</span>
+    </div>
+    <div class="reto-body">
+      <p class="reto-enunciado">
+        Crea una nueva clase <code>Docente</code> en el mismo paquete con los atributos <code>nombre</code>, <code>cedula</code> (int) y una <code>ArrayList&lt;Estudiante&gt;</code> llamada <code>grupo</code>. Agrega los métodos: <code>asignarEstudiante(Estudiante e)</code>, <code>listarGrupo()</code> y <code>mejorEstudiante()</code> que retorna el <code>Estudiante</code> con mayor promedio. En <code>Main</code> crea un docente, asígnale 3 estudiantes del gestor y muestra el mejor.
+      </p>
+      <p style="font-size:13px;color:var(--text3);margin-top:.5rem;">
+        💡 Este reto sienta las bases para la siguiente clase donde veremos <strong>herencia</strong> — una clase <code>Persona</code> podría ser padre de <code>Estudiante</code> y <code>Docente</code>.
+      </p>
+      <div class="reto-criterios">
+        <div class="label-tag" style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Criterios de éxito</div>
+        <div class="criterio"><code>Docente.java</code> compila con el mismo paquete <code>co.edu.iumafis.lang3</code></div>
+        <div class="criterio"><code>mejorEstudiante()</code> retorna <code>null</code> si el grupo está vacío</div>
+        <div class="criterio"><code>listarGrupo()</code> reutiliza el <code>toString()</code> de <code>Estudiante</code></div>
+        <div class="criterio">El main crea el docente, asigna estudiantes y muestra el mejor en consola</div>
+      </div>
+      <details class="hint">
+        <summary>Ver pista estructural</summary>
+        <div class="hint-body">
+          En <code>mejorEstudiante()</code>: inicializa una variable <code>Estudiante mejor = null</code>. Recorre la lista; si <code>mejor == null</code> o <code>e.getPromedio() > mejor.getPromedio()</code>, asigna <code>mejor = e</code>. Retorna <code>mejor</code> al salir del ciclo.
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SECCIÓN 10 — ENTREGABLE
+══════════════════════════════════════════ -->
+<section id="entregable">
+  <h2 class="section-title"><span class="sec-icon i-purple">📄</span>Entregable — evolución del sistema</h2>
+  <div class="entregable-box">
+    <h3>📋 Documento de evolución del Sistema de Gestión de Estudiantes</h3>
+    <p style="font-size:13.5px;color:var(--text2);margin-bottom:1.25rem;">
+      Partiendo del proyecto Maven de esta sesión, debes continuar evolucionando el sistema de forma incremental. El entregable es un <strong>documento</strong> (PDF o Word) que incluye: código fuente comentado + explicación de cada decisión de diseño. Fecha de entrega: <strong>inicio de la semana 4</strong>.
+    </p>
+    <div class="entregable-item">
+      <span class="e-num">1</span>
+      <div class="e-content"><strong>Funciones avanzadas:</strong> Agrega al menos 3 métodos nuevos en <code>GestorEstudiantes</code>: ordenar por promedio, calcular nota máxima y mínima, y buscar por nombre parcial. Documenta qué hacen, qué reciben y qué retornan.</div>
+    </div>
+    <div class="entregable-item">
+      <span class="e-num">2</span>
+      <div class="e-content"><strong>Múltiples clases:</strong> Crea las clases <code>Materia</code> (nombre, código, créditos) y <code>Inscripcion</code> (estudiante + materia + nota). Relaciónalas con el sistema existente.</div>
+    </div>
+    <div class="entregable-item">
+      <span class="e-num">3</span>
+      <div class="e-content"><strong>Herencia:</strong> Crea la clase abstracta <code>Persona</code> con los atributos comunes de <code>Estudiante</code> y <code>Docente</code> (nombre, identificación). Haz que ambas clases <em>extiendan</em> (<code>extends</code>) a <code>Persona</code>.</div>
+    </div>
+    <div class="entregable-item">
+      <span class="e-num">4</span>
+      <div class="e-content"><strong>Polimorfismo:</strong> Crea una <code>ArrayList&lt;Persona&gt;</code> que contenga tanto estudiantes como docentes. Recórrela usando el método <code>toString()</code> de cada objeto — demuestra que Java llama la versión correcta según el tipo real del objeto.</div>
+    </div>
+    <div class="entregable-item">
+      <span class="e-num">5</span>
+      <div class="e-content"><strong>Diagrama de clases:</strong> Dibuja (a mano o con herramienta) el diagrama UML de todas las clases del sistema, mostrando atributos, métodos y relaciones (herencia, composición).</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SECCIÓN 11 — CIERRE
+══════════════════════════════════════════ -->
+<section id="cierre">
+  <h2 class="section-title"><span class="sec-icon i-green">📚</span>Cierre de la semana 2</h2>
+  <div class="footer-grid">
+    <div class="footer-card">
+      <h3>✅ Dominado en semana 2</h3>
+      <div class="tag-list">
+        <span class="tag done">Maven / Gradle</span>
+        <span class="tag done">pom.xml</span>
+        <span class="tag done">co.edu.iumafis.lang3</span>
+        <span class="tag done">int · double · String · boolean</span>
+        <span class="tag done">if / else if / else</span>
+        <span class="tag done">switch expression</span>
+        <span class="tag done">Operador ternario</span>
+        <span class="tag done">ArrayList</span>
+        <span class="tag done">for-each · for clásico</span>
+        <span class="tag done">Métodos con retorno</span>
+        <span class="tag done">Clases POJO</span>
+        <span class="tag done">Constructor + this</span>
+        <span class="tag done">Getters / Setters</span>
+        <span class="tag done">toString()</span>
+        <span class="tag done">ArrayList de objetos</span>
+      </div>
+    </div>
+    <div class="footer-card">
+      <h3>🔜 Semana 3 — POO profunda</h3>
+      <div class="tag-list">
+        <span class="tag upcoming">Herencia (extends)</span>
+        <span class="tag upcoming">Clase abstracta</span>
+        <span class="tag upcoming">Polimorfismo</span>
+        <span class="tag upcoming">Override</span>
+        <span class="tag upcoming">Interfaces</span>
+        <span class="tag upcoming">instanceof</span>
+        <span class="tag upcoming">Scanner interactivo</span>
+      </div>
+      <p style="font-size:13px;color:var(--text3);margin-top:1rem;">En semana 3 verás cómo <code>Estudiante</code> y <code>Docente</code> pueden compartir código a través de una clase <code>Persona</code>, y cómo un mismo método se comporta diferente según el objeto que lo ejecuta.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+  // Progress bar
+  window.addEventListener('scroll', () => {
+    const d = document.documentElement;
+    document.getElementById('progress-bar').style.width =
+      (d.scrollTop / (d.scrollHeight - d.clientHeight) * 100) + '%';
+  });
+
+  function toggleStep(h) {
+    const b = h.nextElementSibling;
+    const t = h.querySelector('.step-toggle');
+    const o = b.classList.toggle('open');
+    t.classList.toggle('open', o);
+  }
+
+  function toggleMenu() {
+    document.getElementById('sidebar').classList.toggle('open');
+  }
+
+  function navClick(el) {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  function copyText(btn, text) {
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '✓ copiado'; btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'copiar'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  function copyCode(btn, id) {
+    const el = document.getElementById(id);
+    const text = el ? el.innerText : '';
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '✓ copiado'; btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'copiar'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  // Auto-open first step of each section
+  document.querySelectorAll('.step-card:first-of-type .step-header').forEach(h => {
+    if (h.closest('#estructura')) h.click();
+    if (h.closest('#listas')) h.click();
+    if (h.closest('#multiclase')) h.click();
+  });
+
+  // Intersection observer → nav highlight
+  const secs = document.querySelectorAll('section[id]');
+  new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        document.querySelectorAll('.nav-item').forEach(n => {
+          n.classList.toggle('active', n.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { threshold: 0.25 }).observe ? secs.forEach(s =>
+    new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting)
+          document.querySelectorAll('.nav-item').forEach(n =>
+            n.classList.toggle('active', n.getAttribute('href') === '#' + e.target.id));
+      });
+    }, { threshold: 0.2 }).observe(s)) : null;
+</script>
+</body>
+</html>
