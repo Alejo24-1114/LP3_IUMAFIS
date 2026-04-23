@@ -5,9 +5,12 @@ package co.edu.iumafis.lang3;
 
 //import java.util.ArrayList;
 
+import java.util.ArrayList;
+
+
 public class Main {
 
-    public static void main(String[] args) {
+    //public static void main(String[] args) {
 
         /*String nombre = "Alejandro";
         int codigo = 102214;
@@ -207,7 +210,7 @@ public class Main {
         
       */
     
-   /* public static void main(String[] args) {
+    public static void main(String[] args) {
     GestorEstudiantes gestor = new GestorEstudiantes();
 
        
@@ -242,9 +245,9 @@ public class Main {
         System.out.println("=== Reporte Semestre ===");
         
         gestor.reportePorSemestre(5);
-        */
         
-        Docente docente = new Docente("Carlos", 223);
+        
+        /*Docente docente = new Docente("Carlos", 223);
         Estudiante e1 = new Estudiante("Ana", 5,4, 4.5,true );
         Estudiante e2 = new Estudiante("Luis", 5, 3, 3.8, true);
         Estudiante e3 = new Estudiante("Sofia", 5, 6, 4.9, true);
@@ -258,15 +261,17 @@ public class Main {
         Estudiante mejor = docente.mejorEstudiante();
 
         if (mejor != null) {
-            System.out.println("Mejor estudiante:");
+            System.out.println("Mejor estudiante: ");
             System.out.println(mejor);
         } else {
             System.out.println("No hay estudiantes");
-        }
+        } */
     }
 }
+
+
     
-   
+ 
     
     
     

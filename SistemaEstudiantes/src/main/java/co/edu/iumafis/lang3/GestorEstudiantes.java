@@ -27,7 +27,7 @@ public class GestorEstudiantes {
             System.out.println("  (lista vacía)");
             return;
         }
-        System.out.println("Código | Nombre          | Sem | Prom | Estado");
+        System.out.println("Código | Nombre | Sem | Prom | Estado");
         System.out.println("─".repeat(55));
         for (Estudiante e : lista) {
             System.out.println(e);   
@@ -88,7 +88,7 @@ public class GestorEstudiantes {
         if (estudiante.getSemestre() == semestre) {
             System.out.println(estudiante);
 
-            suma += estudiante.getPromedio(); // o la nota que manejes
+            suma += estudiante.getPromedio();
             contador++;
         }
     }
@@ -100,6 +100,11 @@ public class GestorEstudiantes {
         System.out.println("Cantidad de estudiantes: " + contador);
         System.out.println("Promedio grupal: " + promedioGrupal);
     }
+
+    
  }
+    public int getTotalEstudiantes(){
+        return lista.size();
+    }
 
 }
