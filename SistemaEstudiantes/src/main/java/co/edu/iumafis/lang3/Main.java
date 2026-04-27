@@ -3,12 +3,51 @@
  */
 package co.edu.iumafis.lang3;
 
-//import java.util.ArrayList;
-
 import java.util.ArrayList;
+
+/**
+ *
+ * @author Tobón
+ */
 
 
 public class Main {
+    
+   public static void main(String[] args) {
+        
+        GestorEstudiantes gestor = new GestorEstudiantes();
+        Estudiante e1 = new Estudiante("Tome", 101, 5, 4.1);
+        Estudiante e2 = new Estudiante("Alejo", 102, 5, 3.4);
+        gestor.agregar(e1);
+        gestor.agregar(e2);
+
+        // Prueba funciones avanzadas
+        System.out.println("--- Buscando 'to' ---");
+        gestor.buscarNombre("to");
+        gestor.mostrarMaxMin();
+
+        // Prueba múltiples clases
+        Materia lp3 = new Materia("Lenguaje de Programación 3", "LP3", 4);
+        Inscripcion ins = new Inscripcion(e1, lp3, 4.1);
+        System.out.println("\n" + ins);
+
+        // Prueba Polimorfismo (Lista de Personas)
+        System.out.println("\n--- Polimorfismo ---");
+        ArrayList<Persona> personas = new ArrayList<>();
+        personas.add(e1); // Estudiante
+        personas.add(new Docente("Prof. Oscar", 500)); // Docente
+
+        for (Persona p : personas) {
+            System.out.println(p.toString()); // Llama al toString de cada uno
+        } 
+   }
+}
+
+
+
+
+
+
 
     //public static void main(String[] args) {
 
@@ -210,7 +249,7 @@ public class Main {
         
       */
     
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
     GestorEstudiantes gestor = new GestorEstudiantes();
 
        
@@ -244,7 +283,7 @@ public class Main {
         
         System.out.println("=== Reporte Semestre ===");
         
-        gestor.reportePorSemestre(5);
+        gestor.reportePorSemestre(5); */
         
         
         /*Docente docente = new Docente("Carlos", 223);
@@ -266,8 +305,8 @@ public class Main {
         } else {
             System.out.println("No hay estudiantes");
         } */
-    }
-}
+  
+
 
 
     

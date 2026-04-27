@@ -8,7 +8,25 @@ package co.edu.iumafis.lang3;
  *
  * @author Tobón
  */
-public class Estudiante {
+
+
+
+public class Estudiante extends Persona {
+    int semestre;
+    double promedio;
+
+    public Estudiante(String nombre, int id, int semestre, double promedio) {
+        super(nombre, id);
+        this.semestre = semestre;
+        this.promedio = promedio;
+    }
+
+    @Override
+    public String toString() {
+        return "Estudiante: " + nombre + " | ID: " + id + " | Prom: " + promedio;
+    }
+}
+/*public class Estudiante {
     private String nombre;
     private int codigo;
     private int semestre;
@@ -56,5 +74,5 @@ public class Estudiante {
                 codigo, nombre, semestre, promedio,
                 activo ? "Activo" : "Inactivo",
                 getEstado());
-    }
-}
+    } */
+
